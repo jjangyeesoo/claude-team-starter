@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew test *)",
+      "Bash(./gradlew test)",
+      "Bash(./gradlew build *)",
+      "Bash(./gradlew build)",
+      "Bash(./gradlew spotlessApply)",
+      "Bash(./gradlew spotlessCheck)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Edit(./build.gradle.kts)",
+      "Edit(./settings.gradle.kts)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/application-local.*)",
+      "Read(./**/application-secret.*)",
+      "Read(./secrets/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "java",
+            "args": ["-Dfile.encoding=UTF-8", "${CLAUDE_PROJECT_DIR}/.claude/hooks/ProtectFiles.java"]
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "java",
+            "args": ["-Dfile.encoding=UTF-8", "${CLAUDE_PROJECT_DIR}/.claude/hooks/VerifyOnStop.java"],
+            "timeout": 600
+          }
+        ]
+      }
+    ]
+  }
+}
