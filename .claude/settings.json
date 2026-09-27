@@ -2,32 +2,44 @@
   "permissions": {
     "allow": [
       "Bash(./gradlew test *)",
-      "Bash(./gradlew test)",
       "Bash(./gradlew build *)",
-      "Bash(./gradlew build)",
-      "Bash(./gradlew spotlessApply)",
-      "Bash(./gradlew spotlessCheck)",
+      "Bash(./gradlew spotlessApply *)",
+      "Bash(./gradlew spotlessCheck *)",
       "Bash(git status *)",
       "Bash(git diff *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "PowerShell(.\\gradlew.bat test *)",
+      "PowerShell(.\\gradlew.bat build *)",
+      "PowerShell(.\\gradlew.bat spotlessApply *)",
+      "PowerShell(.\\gradlew.bat spotlessCheck *)",
+      "PowerShell(git status *)",
+      "PowerShell(git diff *)",
+      "PowerShell(git log *)"
     ],
     "ask": [
       "Bash(git push *)",
-      "Edit(./build.gradle.kts)",
-      "Edit(./settings.gradle.kts)"
+      "PowerShell(git push *)",
+      "Edit(/build.gradle.kts)",
+      "Edit(/settings.gradle.kts)",
+      "Edit(/gradle/libs.versions.toml)"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./**/application-local.*)",
-      "Read(./**/application-secret.*)",
-      "Read(./secrets/**)"
+      "Read(/**/.env)",
+      "Read(/**/.env.*)",
+      "Read(/**/application-local.*)",
+      "Read(/**/application-secret.*)",
+      "Read(/secrets/**)",
+      "Edit(/**/.env)",
+      "Edit(/**/.env.*)",
+      "Edit(/**/application-local.*)",
+      "Edit(/**/application-secret.*)",
+      "Edit(/secrets/**)"
     ]
   },
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit|Write|NotebookEdit",
         "hooks": [
           {
             "type": "command",

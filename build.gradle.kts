@@ -28,15 +28,20 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-	// 실패한 테스트 이름과 assertion 메시지를 콘솔에 출력한다 (Stop hook이 이 로그를 Claude에게 전달).
+	// 실패한 테스트 이름, 기대값/실제값, 위치를 콘솔에 출력한다 (Stop hook이 이 로그를 Claude에게 전달).
 	testLogging {
 		events("failed")
-		exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.SHORT
+		exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+		showCauses = true
+		showStackTraces = true
 	}
 }
 
 // 팀 공통 포맷 규칙. Claude Code의 Stop hook(.claude/hooks/VerifyOnStop.java)이 spotlessApply를 실행한다.
 spotless {
+	// 기존 코드베이스에 도입할 때는 아래 줄의 주석을 풀어, 기준 브랜치 이후 바뀐 파일만 포맷한다.
+	// (그렇지 않으면 첫 Stop hook 실행에서 모든 파일이 재포맷되어 거대한 diff가 생긴다)
+	// ratchetFrom("origin/main")
 	java {
 		target("src/**/*.java")
 		googleJavaFormat()

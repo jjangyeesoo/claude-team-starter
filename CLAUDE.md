@@ -12,6 +12,7 @@ Spring Boot 4.1 / Java 17 / Gradle (Kotlin DSL) 기반 REST API. 샘플 도메�
   - `domain`: 비즈니스 로직, 엔티티. `api`를 import하지 않는다
   - `api`: Controller, 요청/응답 DTO(record). 엔티티를 그대로 응답하지 않고 `*Response.from()`으로 변환한다
 - 공통 에러 처리: `common/error/ApiExceptionHandler`. 에러 응답은 항상 `ErrorResponse { code, message, details }`
+- 시간: `Clock` 빈(`common/config/TimeConfig`)을 생성자로 주입받는다. `Instant.now()`를 직접 호출하지 않는다
 - 아키텍처 결정 목록: @docs/adr/README.md
 
 ## Workflow

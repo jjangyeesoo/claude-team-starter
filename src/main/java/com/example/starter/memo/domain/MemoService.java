@@ -17,11 +17,7 @@ public class MemoService {
   private final AtomicLong sequence = new AtomicLong();
   private final Clock clock;
 
-  public MemoService() {
-    this(Clock.systemUTC());
-  }
-
-  MemoService(Clock clock) {
+  public MemoService(Clock clock) {
     this.clock = clock;
   }
 
