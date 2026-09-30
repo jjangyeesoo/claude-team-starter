@@ -24,7 +24,7 @@ public class ProtectFiles {
       return;
     }
     String original = unescape(m.group(1));
-    String reason = protectedReason(normalize(original));
+    String reason = protectedReason(relativeToProject(normalize(original)));
     if (reason != null) {
       PrintStream err = new PrintStream(System.err, true, StandardCharsets.UTF_8);
       err.println(
@@ -49,7 +49,22 @@ public class ProtectFiles {
     return p.startsWith("/") ? p : "/" + p;
   }
 
+  /**
+   * 프로젝트 폴더 기준 경로로 바꾼다 (맨 앞 '/' 유지). 프로젝트가 C:\secrets\... 처럼 보호 이름이 들어간 폴더 아래 있어도
+   * 오탐하지 않게 하기 위해서다. 프로젝트 밖 경로는 그대로 둔다.
+   */
+  static String relativeToProject(String path) {
+    String dir = System.getenv("CLAUDE_PROJECT_DIR");
+    if (dir == null || dir.isBlank()) return path;
+    String root = normalize(dir);
+    if (!root.endsWith("/")) root += "/";
+    return path.startsWith(root) ? path.substring(root.length() - 1) : path;
+  }
+
   static String protectedReason(String path) {
+    // Windows 파일시스템 별칭: 같은 파일을 다른 이름으로 가리켜 아래 이름 검사를 우회할 수 있다
+    if (path.indexOf(':', 3) >= 0) return "NTFS 대체 데이터 스트림 경로(파일명:스트림)";
+    if (path.matches(".*/[^/]*~\\d[^/]*(/.*)?")) return "8.3 짧은 이름(예: ENV~1)으로 보이는 경로";
     String name = path.substring(path.lastIndexOf('/') + 1);
     if (name.equals(".env") || name.startsWith(".env.")) return "환경변수/비밀값 파일";
     if (name.startsWith("application-local.") || name.startsWith("application-secret."))
@@ -58,6 +73,9 @@ public class ProtectFiles {
     if (path.contains("/.git/")) return "git 내부 파일";
     if (path.contains("/gradle/wrapper/") || name.equals("gradlew") || name.equals("gradlew.bat"))
       return "Gradle wrapper (버전 변경은 ./gradlew wrapper로)";
+    if (name.equals("package-lock.json")) return "npm lock 파일 (npm install/npm ci가 갱신)";
+    if (path.contains("/node_modules/")) return "설치된 의존성 (npm이 관리)";
+    if (path.contains("/.next/")) return "Next.js 빌드 산출물";
     return null;
   }
 

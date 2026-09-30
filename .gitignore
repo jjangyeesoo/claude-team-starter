@@ -45,5 +45,8 @@ CLAUDE.local.md
 .env
 .env.*
 secrets/
-src/main/resources/application-local.*
-src/main/resources/application-secret.*
+**/application-local.*
+**/application-secret.*
+
+### Node / Next.js (web/.gitignore에 상세 항목) ###
+node_modules/

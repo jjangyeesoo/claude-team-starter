@@ -1,6 +1,6 @@
 ---
 paths:
-  - "src/main/java/**/api/**/*.java"
+  - "backend/src/main/java/**/api/**/*.java"
 ---
 # REST API 규칙
 - URL: `/api/v1/<복수형-kebab-case>` (예: `/api/v1/memos`)

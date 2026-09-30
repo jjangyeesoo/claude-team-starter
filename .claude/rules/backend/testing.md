@@ -1,3 +1,7 @@
+---
+paths:
+  - "backend/**"
+---
 # 테스트 규칙
 - 단위 테스트: 도메인 로직은 Spring 없이 순수 JUnit 5 + AssertJ로 테스트한다 (예: `MemoServiceTest`)
 - 웹 계층: `@WebMvcTest(XxxController.class)` + 필요한 빈만 `@Import`. 전체 컨텍스트(`@SpringBootTest`)는 통합 테스트에만 쓴다
