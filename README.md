@@ -171,7 +171,12 @@ docs/
   - 도구 실행 불가 알림 뒤 커밋된 오류가 다시 검증되지 않던 문제 → 내용 해시 방식으로 변경
 - `VerifyOnStop.java` 시나리오 16개 통과: 첫 실행 기준 기록, 병렬 통과, 재실행·`git add`만·통과 내용 커밋은 건너뜀, web 타입 오류는 web만 차단, 루프 방지, 되돌리면 건너뜀, 깨진 테스트 커밋 차단, revert 건너뜀, `node_modules` 없음 알림 후 복구하면 커밋된 오류 차단, `npm` 없음 알림, rename, 문서만 변경
 - `ProtectFiles.java` 15개 사례 통과: 프로젝트 기준 판정(보호 이름이 든 상위 폴더에서 오탐 없음), `.env::$DATA`, `ENV~1`, `PACKAG~1.JSO` 차단
-- QA 에이전트 문서 확인: `cd web && npm ...`의 `cd`는 읽기 전용이라 확인 없이 통과(공식 문서 기준, 실제 세션으로는 미확인)
+- **폴더를 신뢰한 실제 세션**(`claude -p`, Claude Code 2.1.285)에서 권한과 hook 확인
+  - allow: `cd web && npm run verify`, `cd backend && ./gradlew test`가 확인 없이 실행됨 (`cd`가 붙어도 규칙에 맞음)
+  - ask: `npm install left-pad`, `web/package.json` 수정은 승인 대기 → 헤드리스라 거부됨. **`--permission-mode acceptEdits`에서도 ask 규칙이 우선**함
+  - deny: 루트 `.env`, `backend/secrets/x.txt`(하위 폴더) Read와 `cat .env` 모두 거부
+  - hook: `backend/gradlew` 수정을 ProtectFiles가 차단, web 파일 수정 후 Stop hook이 web만 검증(테스트 5개 통과)
+  - 참고: 신뢰하기 전에는 같은 명령들이 allow를 무시당해 모두 승인 대기로 막힘. 도입 첫날 전원이 한 번 대화형으로 실행해 신뢰해야 함
 
 **2026-09-30 (풀스택 확장), Claude Code 2.1.285, Windows 11, JDK 17, Node 24**
 - backend: `./gradlew spotlessCheck test` 통과 (backend/로 옮긴 뒤)
@@ -183,7 +188,7 @@ docs/
   - 문서만 변경 → 건너뜀 / `web/node_modules` 없음 → 차단하지 않고 `npm ci` 안내
 - `ProtectFiles.java`: `package-lock.json`, `node_modules/`, `.next/`, Windows 경로의 `.env.local`, `backend/` 아래 gradle wrapper와 `application-local.*` 차단. `web/src`, `web/package.json`은 허용(package.json은 ask 규칙)
 - 실제 `claude -p` 실행: Claude가 web 테스트를 추가하자 Stop hook이 web만 검증해 5개 테스트 통과. 폴더 신뢰 전이라 allow 규칙은 무시되어 명령 실행은 거부됨(의도된 동작)
-- **확인하지 못한 것**: 폴더를 신뢰한 실제 세션에서의 allow 규칙 적용, macOS/Linux 실행, GitHub에서의 CI 실행. 첫 도입 때 확인하세요
+- **확인하지 못한 것**: macOS/Linux 실행, GitHub에서의 CI 실행. 첫 도입 때 확인하세요
 
 **2026-09-27 (초기 버전, backend 단일 구조)**
 - `ProtectFiles.java`: 22가지 입력이 모두 기대한 종료 코드 (대소문자, 상대경로, NotebookEdit, 공백·한글 경로, content 안의 `"file_path"` 문자열 오탐 없음)
